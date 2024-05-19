@@ -123,6 +123,8 @@ class ScrollSnapList extends StatefulWidget {
 
   final EdgeInsetsGeometry? listViewPadding;
 
+  final bool Function()? canIScroll;
+
   ScrollSnapList(
       {this.background,
       required this.itemBuilder,
@@ -154,7 +156,8 @@ class ScrollSnapList extends StatefulWidget {
       this.clipBehavior = Clip.hardEdge,
       this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
       this.dispatchScrollNotifications = false,
-      this.listViewPadding})
+      this.listViewPadding,
+      this.canIScroll})
       : listController = listController ?? ScrollController(),
         super(key: key);
 
@@ -383,6 +386,9 @@ class ScrollSnapListState extends State<ScrollSnapList> {
 
                   //only animate if not yet snapped (tolerance 0.01 pixel)
                   if ((scrollInfo.metrics.pixels - offset).abs() > 0.01) {
+                    if (widget.canIScroll != null && !widget.canIScroll!()) {
+                      return false;
+                    }
                     _animateScroll(offset);
                   }
                 } else if (scrollInfo is ScrollUpdateNotification) {
